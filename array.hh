@@ -7,8 +7,8 @@
 #ifndef ARRAY_H
 #define ARRAY_H
 
-#include <iostream.h>
-#include <assert.h>
+#include <iostream>
+#include <cassert>
 
 template <class Type> class Array;
 
@@ -59,7 +59,7 @@ template <class Type>
 Type &Array<Type>::operator[](int i) {
     // this version is used for assignment, e.g. "Array<int> a; a[i] = 7;"
     if (i<0) {
-	cerr << "Array<Type>::operator[](" << i << ")" << endl;
+      std::cerr << "Array<Type>::operator[](" << i << ")" << std::endl;
 	exit(1);
     }
     if (i>=n) {
@@ -78,7 +78,7 @@ Type &Array<Type>::operator[](int i) const {
     // this version needed for reading elements of const arrays,
     // e.g. "printfirst(const Array<int> &a) {cout << a[0];}"
     if (i<0 || i>=n) {
-	cerr << "Array<Type>::operator[](" << i << ") but n=" << n << endl;
+      std::cerr << "Array<Type>::operator[](" << i << ") but n=" << n << std::endl;
 	exit(1);
     }
     return data[i];
@@ -88,12 +88,12 @@ Type &Array<Type>::operator[](int i) const {
 // ostream &operator<<(ostream &s, const Type &x) {	// print item
 
 template <class Type>
-ostream &operator<<(ostream &s, const Array<Type> &a) {	// print array
+std::ostream &operator<<(std::ostream &s, const Array<Type> &a) {	// print array
     s << "array n=" << a.num() << " cap=" << a.cap << ": ";
     int i;
     for (i=0; i<a.num(); i++)
 	s << "[" << i << "]=" << a[i] << ", ";
-    s << "end" << endl;
+    s << "end" << std::endl;
     return s;
 }
 

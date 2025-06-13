@@ -7,8 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <svl/Vec3.h>
-
 #include "cell.hh"
 #include "edge.hh"
 #include "vertex.hh"

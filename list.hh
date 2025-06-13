@@ -8,8 +8,8 @@
 #ifndef LIST_H
 #define LIST_H
 
-#include <iostream.h>
-#include <assert.h>
+#include <iostream>
+#include <cassert>
 
 template <class Type> class List;
 
@@ -98,12 +98,12 @@ class List {			   // List<Type>: linked list or stack of items
 // ostream &operator<<(ostream &s, const Type &x) {	// print item
 
 template <class Type>
-ostream &operator<<(ostream &s, const List<Type> &l) {	// print list
+std::ostream &operator<<(std::ostream &s, const List<Type> &l) {	// print list
     s << "list (length " << l.length() << "): ";
     List_item<Type> *p;
     for (p=l.first(); p; p=p->next())
 	s << *p->obj << ", ";
-    s << "end" << endl;
+    s << "end" << std::endl;
     return s;
 }
 
@@ -218,14 +218,14 @@ Type *List<Type>::remove(List_item<Type> *q) {	// remove item q from list
 	    delete q;
 	    return t;
 	}
-    cerr << "can't remove nonexistent item" << endl;
+    std::cerr << "can't remove nonexistent item" << std::endl;
     return t;
 }
 
 template <class Type>
 void List<Type>::dup() {			// duplicate top item
     if (!firstp) {
-	cerr << "ERROR: attempt to dup() first item in empty list" << endl;
+      std::cerr << "ERROR: attempt to dup() first item in empty list" << std::endl;
 	exit(1);
     }
     List_item<Type> *p = new List_item<Type>(firstp->obj);

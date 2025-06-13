@@ -1,6 +1,6 @@
 // array.cc - this code is for debugging and demo only; not needed normally
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "array.hh"
 
@@ -9,9 +9,9 @@
 // to use the Array_item and Array parameterized types, do something like this:
 // (this shows two different ways to print list)
 
-#include <assert.h>
-#include <stdio.h>
-#include <iostream.h>
+#include <cassert>
+#include <cstdio>
+#include <iostream>
 
 class Num {		// dumb little class
     int val;

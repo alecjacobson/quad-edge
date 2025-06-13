@@ -14,15 +14,15 @@
 // of all these temporary data structures, and going through the model twice,
 // please let me know.
 
-#include <stdlib.h>
-#include <string.h>	// for strcmp
-#include <fstream.h>	// for file I/O
-#include <iomanip.h>	// for file input
+#include <cstdlib>
+#include <string>	// for strcmp
+#include <fstream>	// for file I/O
+#include <iomanip>	// for file input
 
-#include <assert.h>
-#include <stdio.h>
+#include <cassert>
+#include <cstdio>
 
-#include <svl/SVL.h>
+//#include <svl/SVL.h>
 
 #include "list.hh"
 #include "array.hh"
@@ -41,7 +41,7 @@ struct Tface {			// a (temporary) face
     // need anything else in here??
 };
 
-ostream &operator<<(ostream &s, const Tface &f)	// print a Tface
+std::ostream &operator<<(std::ostream &s, const Tface &f)	// print a Tface
     { return s << 'f' << f.no << " with vertices " << f.vlist; }
 
 class Tsector {
@@ -94,10 +94,10 @@ struct Tvert {			// a (temporary) vertex
     int instantiated;           // true if identified and instantiated
 };
 
-ostream &operator<<(ostream &s, const Tvert &t)	// print a Tvert
+std::ostream &operator<<(std::ostream &s, const Tvert &t)	// print a Tvert
     { return s << t.no; }
 
-ostream &operator<<(ostream &s, const Tsector &sector)	// print a Tsector
+std::ostream &operator<<(std::ostream &s, const Tsector &sector)	// print a Tsector
     { return s << sector.p->no << "-" << sector.q->no; }
 
 // ---------------------------- obj file input
@@ -109,8 +109,8 @@ static void merge_arc(Tvert *v, Tvert *p, Tvert *q, Tface *f) {
     //  2. ( bef && !aft) it goes on the end of an existing arc
     //  3. (!bef &&  aft) it goes on the beginning of an existing arc
     //  4. (!bef && !aft) it does not connect with an existing arc
-    // cout << "merge_arc " << *v << " " << *p << " " << *q << endl;
-    // cout << "before, arclist=" << v->arclist;
+    // std::cout << "merge_arc " << *v << " " << *p << " " << *q << std::endl;
+    // std::cout << "before, arclist=" << v->arclist;
     List_item<Arc> *a, *aft_item;
     Arc *bef = 0, *aft = 0;
     Tsector *sector = new Tsector(p, f, q);
@@ -119,7 +119,7 @@ static void merge_arc(Tvert *v, Tvert *p, Tvert *q, Tface *f) {
 	if (a->obj->last()->obj->q==p) bef = a->obj;
 	if (a->obj->first()->obj->p==q) {aft = a->obj; aft_item = a;}
     }
-    // cout << "  bef=" << *bef << "  aft=" << *aft;
+    // std::cout << "  bef=" << *bef << "  aft=" << *aft;
     // now concatenate the three arcs bef, (p,q), and aft
     // where bef and aft might be null
     if (bef) {
@@ -127,7 +127,7 @@ static void merge_arc(Tvert *v, Tvert *p, Tvert *q, Tface *f) {
 	    bef->append(sector);		// insert new sector
 	    if (bef==aft) {
 		// done with vertex! connecting these would make arc circular
-		// cout << v->arclist << " done" << endl;
+		// std::cout << v->arclist << " done" << std::endl;
 		v->done = 1;
 		return;
 	    }
@@ -148,11 +148,11 @@ static void merge_arc(Tvert *v, Tvert *p, Tvert *q, Tface *f) {
 	    v->arclist.append(arc);
 	}
     }
-    // cout << "after, arclist=" << v->arclist;
+    // std::cout << "after, arclist=" << v->arclist;
 }
 
 static void add_arcs(Vlist &vlist, Tface *f) {
-    // cout << "add_arcs " << vlist;
+    // std::cout << "add_arcs " << vlist;
     // vlist is not a circular list, but we need to step through all
     // consecutive triples as if it were circular
     List_item<Tvert> *u, *v, *w;
@@ -481,32 +481,32 @@ static void makeVertex(Cell *cell, Tvert *v)
 static void print_quadedge(Array<Tvert> verts, List<Tface> faces) {
     // print vertices around each face and vertex currently
 
-    cout << "VERTICES OF EACH FACE:" << endl;
+    std::cout << "VERTICES OF EACH FACE:" << std::endl;
     List_item<Tface> *fi;
     for (fi=faces.first(); fi; fi=fi->next()) {
-	cout << "face:";
+	std::cout << "face:";
 	List_item<Tvert> *vi;
 	for (vi=fi->obj->vlist.first(); vi; vi=vi->next())
-	    cout << " " << vi->obj->no;
-	cout << endl;
+	    std::cout << " " << vi->obj->no;
+	std::cout << std::endl;
     }
-    cout << endl;
+    std::cout << std::endl;
 
-    cout << "VERTICES AROUND EACH VERTEX:" << endl;
+    std::cout << "VERTICES AROUND EACH VERTEX:" << std::endl;
     int i;
     for (i=0; i<verts.num(); i++) {
 	Tvert *v;
 	v = &verts[i];
-	cout << "around vertex " << v->no << ":";
+	std::cout << "around vertex " << v->no << ":";
 	assert(v->done);
 	assert(v->arclist.length()==1);
 	// step through the Tverts in the first (and only) arc of arclist
 	List_item<Tsector> *wi;
 	for (wi=v->arclist.first()->obj->first(); wi; wi=wi->next()) {
 	    Tsector *sector = wi->obj;
-	    cout << " " << *sector;
+	    std::cout << " " << *sector;
 	}
-	cout << endl;
+	std::cout << std::endl;
     }
 }
 
@@ -517,14 +517,14 @@ void check_closed(Array<Tvert> verts) {
 	Arclist &al = verts[i].arclist;
 	if (!verts[i].done || al.length()!=1) {
 	    if (al.length()==0)
-		cerr << "\nERROR in OBJ file: unused vertex "
-		    << verts[i].no << endl;
+		std::cerr << "\nERROR in OBJ file: unused vertex "
+		    << verts[i].no << std::endl;
 	    else if (!verts[i].done)
-		cerr << "\nERROR in OBJ file: vertex " << verts[i].no
-		    << " is not surrounded by polygons" << endl;
+		std::cerr << "\nERROR in OBJ file: vertex " << verts[i].no
+		    << " is not surrounded by polygons" << std::endl;
 	    else
-		cerr << "\nERROR in OBJ file: repeated face: " <<
-			*al.first()->next()->obj->first()->obj->f << endl;
+		std::cerr << "\nERROR in OBJ file: repeated face: " <<
+			*al.first()->next()->obj->first()->obj->f << std::endl;
 	    exit(1);
 	}
     }
@@ -593,7 +593,7 @@ static Cell *build_quadedge(Array<Tvert> verts, List<Tface> faces) {
   return cell;
 }
 
-static Cell *objReadCell(istream &s, const char *streamname) {
+static Cell *objReadCell(std::istream &s, const char *streamname) {
 
     // warning: this routine does a lousy job of checking for errors
     // (e.g. spaces at the end of input lines)
@@ -607,13 +607,13 @@ static Cell *objReadCell(istream &s, const char *streamname) {
 
     List<Tface> faces;		// all the faces
 
-    while (s >> setw(sizeof tok) >> tok) {
-        // cout << "(" << tok << ")" << endl;
+    while (s >> std::setw(sizeof tok) >> tok) {
+        // std::cout << "(" << tok << ")" << std::endl;
 	if (!strcmp(tok, "v")) {		// vertex command
 	    nvert++;
 	    double x, y, z;
 	    s >> x >> y >> z;
-	    // cout << "verts[" << nvert << "]=" << Vec3(x, y, z) << endl;
+	    // std::cout << "verts[" << nvert << "]=" << Vec3(x, y, z) << std::endl;
 	    verts[nvert-1].p = Vec3(x, y, z);
 	    verts[nvert-1].no = nvert;
 	    verts[nvert-1].done = 0;
@@ -632,14 +632,14 @@ static Cell *objReadCell(istream &s, const char *streamname) {
 	    int n;
 	    for (n=0; s.peek()!='\n'; n++) {
 		int v;
-		// cout << "  peek='" << (char)s.peek() << "' ";
+		// std::cout << "  peek='" << (char)s.peek() << "' ";
 		s >> v;
-		// cout << "  got " << v << endl;
+		// std::cout << "  got " << v << std::endl;
 		v--;		// we start numbering at 0, not 1
 		f->vlist.append(&verts[v]);
 	    }
-	    // cout << "done gobbling" << endl;
-	    // cout << "f " << f->vlist;
+	    // std::cout << "done gobbling" << std::endl;
+	    // std::cout << "f " << f->vlist;
 	    add_arcs(f->vlist, f);		// add the topological info in face f
 	}
 	else if (!strcmp(tok, "#")) {
@@ -647,16 +647,16 @@ static Cell *objReadCell(istream &s, const char *streamname) {
 	    s.ignore(1000, '\n');
 	}
 	else {
-	    cerr << "objReadCell: I can't parse this OBJ file, hit token (" << tok
-		<< ")" << endl;
+	    std::cerr << "objReadCell: I can't parse this OBJ file, hit token (" << tok
+		<< ")" << std::endl;
 	    exit(1);
 	}
     }
     /*
-    cout << "obj file " << streamname << " contained "
+    std::cout << "obj file " << streamname << " contained "
 	<< nvert << " vertices, "
 	<< faces.length() << " faces "
-	<< endl;
+	<< std::endl;
     */
 
     // print_quadedge(verts, faces);
@@ -665,9 +665,9 @@ static Cell *objReadCell(istream &s, const char *streamname) {
 }
 
 Cell *objReadCell(const char *file) {
-    ifstream s(file, ios::in);
+    std::ifstream s(file, std::ios::in);
     if (!s) {
-	cerr << "objReadCell: can't read " << file << endl;
+	std::cerr << "objReadCell: can't read " << file << std::endl;
 	return 0;
     }
     return objReadCell(s, file);
@@ -682,7 +682,7 @@ void main(int argc, char **argv) {
 
 #endif
 
-static void objWriteCell(Cell *cell, ostream &s, const char *streamname)
+static void objWriteCell(Cell *cell, std::ostream &s, const char *streamname)
 {
   // renumber vertices in current order
   // yuk: should really leave ids intact ???
@@ -739,9 +739,9 @@ static void objWriteCell(Cell *cell, ostream &s, const char *streamname)
 
 void objWriteCell(Cell *cell, const char *file)
 {
-    ofstream s(file, ios::out);
+    std::ofstream s(file, std::ios::out);
     if (!s) {
-	cerr << "objWriteCell: can't write " << file << endl;
+	std::cerr << "objWriteCell: can't write " << file << std::endl;
 	return;
     }
     objWriteCell(cell, s, file);

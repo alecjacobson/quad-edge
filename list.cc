@@ -1,6 +1,6 @@
 // list.cc - this code is for debugging and demo only; not needed normally
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "list.hh"
 
@@ -9,9 +9,9 @@
 // to use the List_item and List parameterized types, do something like this:
 // (this shows two different ways to print list)
 
-#include <assert.h>
-#include <stdio.h>
-#include <iostream.h>
+#include <cassert>
+#include <cstdio>
+#include <iostream>
 
 class Num {		// dumb little class
     int val;
@@ -30,7 +30,7 @@ class Num {		// dumb little class
 typedef List<Num> Num_list;		// a list of Nums
 typedef List_item<Num> Num_item;	// an item in a list of Nums
 
-ostream &operator<<(ostream &s, const Num &n)	// print Num
+std::ostream &operator<<(std::ostream &s, const Num &n)	// print Num
     {return s << n.value();}
 
 typedef List<Num_list> Table;		// a list of list of Nums;
@@ -58,11 +58,11 @@ void simple_test() {
     printf("\n");
 
     // print list with iostream
-    cout << "this is my " << l;
+    std::cout << "this is my " << l;
 
     Num_list l2;
     l2.copy(l);
-    cout << "copied l to l2" << endl;
+    std::cout << "copied l to l2" << std::endl;
     // l.free_items();
 
     while (x = l.pop())
